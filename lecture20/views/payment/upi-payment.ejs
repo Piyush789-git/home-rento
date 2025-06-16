@@ -1,0 +1,151 @@
+<%- include('../partials/head') %>
+  </head>
+  <body>
+    <%- include('../partials/nav') %>
+    <main class="container mx-auto mt-10 px-4">
+      <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8">
+        <div class="text-center mb-8">
+          <i class="fas fa-qrcode text-4xl text-blue-500 mb-4"></i>
+          <h2 class="text-2xl font-bold text-gray-800">UPI Payment</h2>
+          <p class="text-gray-600 mt-2">Complete your payment using UPI</p>
+        </div>
+
+        <div class="border-b border-gray-200 pb-6 mb-6">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-gray-600">Amount to Pay:</span>
+            <span class="text-xl font-bold text-green-600">₹<%= amount %></span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Booking ID:</span>
+            <span class="font-medium"><%= bookingId %></span>
+          </div>
+        </div>
+
+        <form action="/payment/process-upi" method="POST" class="space-y-6" id="upiForm">
+          <input type="hidden" name="bookingId" value="<%= bookingId %>">
+          <input type="hidden" name="amount" value="<%= amount %>">
+          
+          <!-- UPI App Selection -->
+          <div class="mb-6">
+            <label class="block text-gray-700 font-medium mb-4">Select UPI App</label>
+            <div class="grid grid-cols-3 gap-4">
+              <!-- PhonePe -->
+              <label class="cursor-pointer">
+                <input type="radio" name="upiApp" value="phonepe" class="sr-only" required>
+                <div class="border rounded-lg p-4 text-center hover:border-red-500 transition-all duration-200 upi-app-option">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" 
+                       alt="PhonePe" class="w-12 h-12 mx-auto mb-2 object-contain">
+                  <span class="text-sm">PhonePe</span>
+                </div>
+              </label>
+
+              <!-- Google Pay -->
+              <label class="cursor-pointer">
+                <input type="radio" name="upiApp" value="gpay" class="sr-only" required>
+                <div class="border rounded-lg p-4 text-center hover:border-red-500 transition-all duration-200 upi-app-option">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/2560px-Google_Pay_Logo.svg.png" 
+                       alt="Google Pay" class="w-12 h-12 mx-auto mb-2 object-contain">
+                  <span class="text-sm">Google Pay</span>
+                </div>
+              </label>
+
+              <!-- Paytm -->
+              <label class="cursor-pointer">
+                <input type="radio" name="upiApp" value="paytm" class="sr-only" required>
+                <div class="border rounded-lg p-4 text-center hover:border-red-500 transition-all duration-200 upi-app-option">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Paytm_Logo_%28standalone%29.svg/2560px-Paytm_Logo_%28standalone%29.svg.png" 
+                       alt="Paytm" class="w-12 h-12 mx-auto mb-2 object-contain">
+                  <span class="text-sm">Paytm</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- UPI ID Input -->
+          <div id="upiSection" class="hidden">
+            <label class="block text-gray-700 font-medium mb-2" for="upiId">UPI ID</label>
+            <div class="relative">
+              <input 
+                type="text" 
+                id="upiId" 
+                name="upiId" 
+                class="w-full pr-20 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="yourname@upi"
+                pattern="[a-zA-Z0-9\.\-\_]{3,}@[a-zA-Z]{3,}"
+                required
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center">
+                <select class="h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md" id="upiSuffix">
+                  <option>@okaxis</option>
+                  <option>@okhdfcbank</option>
+                  <option>@oksbi</option>
+                  <option>@okicici</option>
+                  <option>@ybl</option>
+                </select>
+              </div>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">Enter your UPI ID (e.g., yourname@upi)</p>
+          </div>
+
+          <button 
+            type="submit" 
+            id="payButton"
+            class="w-full bg-red-500 text-white py-3 px-6 rounded-md hover:bg-red-600 transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-3 hidden"
+          >
+            <i class="fas fa-lock"></i>
+            Proceed to Pay
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <script>
+      // UPI ID validation and formatting
+      const upiInput = document.getElementById('upiId');
+      const upiSuffix = document.getElementById('upiSuffix');
+      
+      upiSuffix.addEventListener('change', function() {
+        const upiValue = upiInput.value.split('@')[0];
+        upiInput.value = upiValue + this.value;
+      });
+
+      // UPI app selection handling
+      const upiAppOptions = document.querySelectorAll('input[name="upiApp"]');
+      const upiSection = document.getElementById('upiSection');
+      const payButton = document.getElementById('payButton');
+      const upiAppDivs = document.querySelectorAll('.upi-app-option');
+
+      upiAppOptions.forEach((radio, index) => {
+        radio.addEventListener('change', function() {
+          // Update visual selection
+          upiAppDivs.forEach(div => div.classList.remove('border-red-500'));
+          upiAppDivs[index].classList.add('border-red-500');
+
+          // Show UPI ID input and pay button
+          upiSection.classList.remove('hidden');
+          payButton.classList.remove('hidden');
+        });
+      });
+
+      // Form validation
+      document.getElementById('upiForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const upiId = upiInput.value;
+        const upiApp = document.querySelector('input[name="upiApp"]:checked').value;
+
+        if (!upiId.includes('@')) {
+          alert('Please enter a valid UPI ID');
+          return;
+        }
+
+        // Simulate app redirection
+        const amount = document.querySelector('input[name="amount"]').value;
+        alert(`Redirecting to ${upiApp.toUpperCase()} app for payment of ₹${amount}...`);
+        
+        // Submit the form
+        this.submit();
+      });
+    </script>
+  </body>
+</html> 

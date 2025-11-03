@@ -1,6 +1,6 @@
 # Home-Rento
 
-A full-stack web application that replicates core features of Airbnb, built with Node.js, Express, MongoDB, and Tailwind CSS.
+A full-stack web application that replicates core features of HomeRento, built with Node.js, Express, MongoDB, and Tailwind CSS.
 
 ## Features
 

@@ -1,4 +1,4 @@
-# Airbnb Clone
+# Home-Rento
 
 A full-stack web application that replicates core features of Airbnb, built with Node.js, Express, MongoDB, and Tailwind CSS.
 
@@ -39,7 +39,7 @@ Before running this project, make sure you have the following installed:
 1. Clone the repository:
 ```bash
 git clone [your-repository-url]
-cd airbnb
+cd homerento
 ```
 
 2. Install dependencies:
@@ -95,6 +95,6 @@ This project is licensed under the ISC License.
 ## Acknowledgments
 
 - Built as a learning project
-- Inspired by Airbnb's functionality
+- Inspired by homerento's functionality
 - Uses various open-source packages and tools
 
